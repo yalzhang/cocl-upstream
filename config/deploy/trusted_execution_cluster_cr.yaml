@@ -1,0 +1,9 @@
+apiVersion: trusted-execution-clusters.io/v1alpha1
+kind: TrustedExecutionCluster
+metadata:
+  name: trusted-execution-cluster
+  namespace: trusted-execution-clusters
+spec:
+  pcrsComputeImage: quay.io/trusted-execution-clusters/compute-pcrs:0.1.0
+  registerServerImage: quay.io/trusted-execution-clusters/registration-server:0.1.0
+  trusteeImage: quay.io/trusted-execution-clusters/key-broker-service:tpm-verifier-built-in-as-20250711

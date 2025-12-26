@@ -1,0 +1,79 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: trusted-cluster-operator-role
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - create
+  - get
+  - patch
+  - update
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  - services
+  verbs:
+  - create
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - create
+  - get
+  - update
+- apiGroups:
+  - batch
+  resources:
+  - jobs
+  verbs:
+  - create
+  - delete
+  - list
+  - watch
+- apiGroups:
+  - trusted-execution-clusters.io
+  resources:
+  - approvedimages
+  verbs:
+  - get
+  - list
+  - patch
+  - watch
+- apiGroups:
+  - trusted-execution-clusters.io
+  resources:
+  - approvedimages/status
+  - trustedexecutionclusters/status
+  verbs:
+  - patch
+- apiGroups:
+  - trusted-execution-clusters.io
+  resources:
+  - machines
+  verbs:
+  - create
+  - delete
+  - list
+  - patch
+  - watch
+- apiGroups:
+  - trusted-execution-clusters.io
+  resources:
+  - machines/status
+  verbs:
+  - get
+  - update
+- apiGroups:
+  - trusted-execution-clusters.io
+  resources:
+  - trustedexecutionclusters
+  verbs:
+  - list
+  - watch

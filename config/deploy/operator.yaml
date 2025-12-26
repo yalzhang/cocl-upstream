@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: trusted-execution-clusters
+spec: {}
+status: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: trusted-cluster-operator
+  name: trusted-cluster-operator
+  namespace: trusted-execution-clusters
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trusted-cluster-operator
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: trusted-cluster-operator
+    spec:
+      containers:
+      - command:
+        - /usr/bin/operator
+        image: quay.io/trusted-execution-clusters/trusted-cluster-operator:0.1.0
+        name: trusted-cluster-operator
+        resources: {}
+      serviceAccountName: trusted-cluster-operator
+status: {}
