@@ -1,0 +1,138 @@
+---
+# SPDX-FileCopyrightText: Yalan Zhang <yalzhang@redhat.com>
+#
+# SPDX-License-Identifier: CC0-1.0
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: |-
+      [
+        {
+          "apiVersion": "trusted-execution-clusters.io/v1alpha1",
+          "kind": "TrustedExecutionCluster",
+          "metadata": {
+            "name": "example-trustedexecutioncluster"
+          },
+          "spec": {
+            "trusteeImage": "quay.io/trusted-execution-clusters/key-broker-service:tpm-verifier-built-in-as-20250711",
+            "pcrsComputeImage": "quay.io/trusted-execution-clusters/compute-pcrs:0.1.0",
+            "registerServerImage": "quay.io/trusted-execution-clusters/registration-server:0.1.0",
+            "publicTrusteeAddr": "<trustee-address>"
+          }
+        },
+        {
+          "apiVersion": "trusted-execution-clusters.io/v1alpha1",
+          "kind": "ApprovedImage",
+          "metadata": {
+            "name": "example-approvedimage"
+          },
+          "spec": {
+            "image": "quay.io/fedora/fedora-coreos@sha256:e71dad00aa0e3d70540e726a0c66407e3004d96e045ab6c253186e327a2419e5"
+          }
+        }
+      ]
+    olm.skipRange: ">=0.0.0 <1.0.0"
+    containerImage: "quay.io/trusted-execution-clusters/trusted-cluster-operator:0.1.0"
+    capabilities: Basic Install
+  name: trusted-cluster-operator.v0.1.0
+  namespace: placeholder
+spec:
+  displayName: Trusted Execution Cluster Operator
+  description: An operator to manage a trusted execution cluster, which is a Kubernetes cluster that can attest its integrity to a relying party
+  version: 0.1.0
+  minKubeVersion: "1.27.0"
+  provider:
+    name: Red Hat
+  icon:
+    - base64data: "<base64 PNG>"
+      mediatype: "image/png"
+
+  maturity: alpha
+  installModes:
+    - type: OwnNamespace
+      supported: true
+    - type: SingleNamespace
+      supported: false
+    - type: MultiNamespace
+      supported: false
+    - type: AllNamespaces
+      supported: false
+  relatedImages:
+    - name: trusted-cluster-operator
+      image: quay.io/trusted-execution-clusters/trusted-cluster-operator:0.1.0
+    - name: compute-pcrs
+      image: quay.io/trusted-execution-clusters/compute-pcrs:0.1.0
+    - name: registration-server
+      image: quay.io/trusted-execution-clusters/registration-server:0.1.0
+    - name: trustee
+      image: quay.io/trusted-execution-clusters/key-broker-service:tpm-verifier-built-in-as-20250711
+  install:
+    strategy: deployment
+    spec:
+      clusterPermissions:
+        - serviceAccountName: trusted-cluster-operator
+          # Rules are dynamically generated from config/rbac/role.yaml during the bundle build
+          rules: []
+      deployments:
+        - name: trusted-cluster-operator
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                app: trusted-cluster-operator
+            template:
+              metadata:
+                labels:
+                  app: trusted-cluster-operator
+              spec:
+                securityContext:
+                  runAsNonRoot: true
+                  runAsUser: 65534
+                serviceAccountName: trusted-cluster-operator
+                containers:
+                  - name: trusted-cluster-operator
+                    image: quay.io/trusted-execution-clusters/trusted-cluster-operator:0.1.0
+                    command:
+                      - /usr/bin/operator
+                    imagePullPolicy: IfNotPresent
+                    env:
+                      - name: WATCH_NAMESPACE
+                        valueFrom:
+                          fieldRef:
+                            fieldPath: metadata.namespace
+                      - name: POD_NAME
+                        valueFrom:
+                          fieldRef:
+                            fieldPath: metadata.name
+                      - name: OPERATOR_NAME
+                        value: "trusted-cluster-operator"
+                    resources:
+                      limits:
+                        cpu: 500m
+                        memory: 256Mi
+                      requests:
+                        cpu: 100m
+                        memory: 128Mi
+                    securityContext:
+                      allowPrivilegeEscalation: false
+                      capabilities:
+                        drop:
+                          - ALL
+  customresourcedefinitions:
+    owned:
+      - name: trustedexecutionclusters.trusted-execution-clusters.io
+        version: v1alpha1
+        kind: TrustedExecutionCluster
+        displayName: Trusted Execution Cluster
+        description: Represents a trusted execution cluster.
+      - name: machines.trusted-execution-clusters.io
+        version: v1alpha1
+        kind: Machine
+        displayName: Machine
+        description: Represents a machine in a trusted execution cluster.
+      - name: approvedimages.trusted-execution-clusters.io
+        version: v1alpha1
+        kind: ApprovedImage
+        displayName: Approved Image
+        description: Represents a container image approved for execution.

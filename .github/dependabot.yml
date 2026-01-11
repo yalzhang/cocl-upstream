@@ -1,0 +1,41 @@
+# SPDX-FileCopyrightText: Timothée Ravier <tim@siosm.fr>
+# SPDX-FileCopyrightText: Jakob Naucke <jnaucke@redhat.com>
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# Inspired by https://github.com/coreos/repo-templates
+
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      actions:
+        patterns:
+          - "*"
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      golang:
+        patterns:
+          - "*"
+  - package-ecosystem: "cargo"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      rust:
+        patterns:
+          - "*"
+    ignore:
+      - dependency-name: "warp"
+        # Block newer versions of Warp so we can continue logging the client address,
+        # cf. https://github.com/seanmonstar/warp/issues/1127
+        versions: [">=0.4"]
+      - dependency-name: "rand_core"
+        # Block newer versions of rand_core, incompatible
+        versions: [">=0.7"]

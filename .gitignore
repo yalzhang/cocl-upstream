@@ -1,0 +1,17 @@
+# SPDX-FileCopyrightText: Alice Frosi <afrosi@redhat.com>
+# SPDX-FileCopyrightText: Jakob Naucke <jnaucke@redhat.com>
+#
+# SPDX-License-Identifier: CC0-1.0
+
+.crates.toml
+.crates2.json
+.kubeconfig
+trusted-cluster-gen
+/bin
+/config/crd
+/config/deploy
+/config/rbac/role.yaml
+/lib/src/kopium
+/target
+bundle/manifests/
+bundle/metadata/
